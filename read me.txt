@@ -1,0 +1,12 @@
+Firstly, install UQLab :
+
+1. Unzip the zip archive in a folder, say my_UQLab_folder
+​
+2. Open MATLAB and select my_UQLab_folder/core as your working directory
+
+3. Type uqlab_install 
+
+Then, run the "main ML.m" file to obtain the ML model, and run the "main Opt with ML.m" file for the optimization results. 
+
+Note that, variable x1 in  "main Opt with ML.m" file should be 2, 5, or 10, matching the corresponding results in the paper. 
+

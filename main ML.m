@@ -1,0 +1,41 @@
+close all;clear ;clc
+tic;
+uqlab
+format long g
+f1=xlsread('Opt_new_0816.xlsx',2,'A2:G301');
+f2=xlsread('Opt_new_0816.xlsx',3,'A2:G251');
+f=[f1;f2];
+global Nmodel
+d=6;Nmodel=550;nv=size(f,1)-Nmodel;
+lb=[2,10,4,2.5,0.00147,5];ub=[10,30,10,5,0.0314,31];%13.2
+VT=repmat({'Uniform'},1,d);
+for ii = 1:d
+    InputOpts.Marginals(ii).Type = VT{ii};
+    InputOpts.Marginals(ii).Parameters = [lb(ii),ub(ii)]; 
+end
+myInput = uq_createInput(InputOpts);
+MetaOpts.ExpDesign.X =f(1:Nmodel,1:d);'LHS';'MC';%'LHS';%
+MetaOpts.ExpDesign.Y=f(1:Nmodel,d+1);
+MetaOpts.Type='Metamodel';
+MetaOpts.MetaType='PCK';
+MetaOpts.Mode = 'sequential';
+mySPCK = uq_createModel(MetaOpts);
+f3=xlsread('validation sample.xlsx',1,'A2:G151');
+
+Xverify =f3(:,1:d);
+
+Ypce=uq_evalModel(Xverify);
+
+Ytrue=f3(:,end);
+
+y_mean_true=mean(Ytrue);
+R2=1-sum((Ypce-Ytrue).^2)/(sum((Ytrue-y_mean_true).^2))
+figure (1)
+scatter(Ypce(1:end),Ytrue(1:end));hold on
+plot([min(Ytrue(1:end)),max(Ytrue(1:end))],[min(Ytrue(1:end)),max(Ytrue(1:end))],'LineWidth',2);
+box on
+legend('predictions and real responses', '1:1 line','Location','NorthWest')
+xlabel(' predictions')
+ylabel(' real responses')
+
+sample666figure
